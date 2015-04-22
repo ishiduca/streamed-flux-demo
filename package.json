@@ -1,6 +1,6 @@
 {
   "name": "streamed-flux",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "demonstration to build the flux patterns by stream.",
   "dependencies": {
     "deepmerge": "^0.2.7",

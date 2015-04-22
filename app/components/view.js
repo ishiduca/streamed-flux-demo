@@ -1,10 +1,8 @@
 'use strict'
-var React        = require('react')
-var merge        = require('deepmerge')
-var es           = require('event-stream')
-var dispatcher   = require('../dispatcher')
-var storeUserMsg = require('../stores/user-message')
-var storeUserSgn = require('../stores/user-signin')
+var React = require('react')
+var merge = require('deepmerge')
+var es    = require('event-stream')
+var store = require('../stores/user')
 
 var baseStyle = {
     display: 'inline-block'
@@ -29,11 +27,15 @@ module.exports = React.createClass({
                 {
                     this.state.list.map(function (data) {
                         return (
-                            <li key={data.time} style={{listStyle: 'none', width: '100%'}}>
-                                <div style={styles.name}>{data.name || data.id}</div>
-                                <p style={styles.msg}>{data.msg || '> signin'}</p>
+                            <li key={data.value.time} style={{listStyle: 'none', width: '100%'}}>
+                                <div style={styles.name}>
+                                    {data.value.name || data.actionType}
+                                </div>
+                                <p style={styles.msg}>
+                                    {data.value.msg || data.value.id}
+                                </p>
                                 <div style={styles.time}>
-                                    {(new Date(data.time)).toUTCString()}
+                                    {(new Date(data.value.time)).toUTCString()}
                                 </div>
                             </li>
                         )
@@ -46,18 +48,8 @@ module.exports = React.createClass({
         return {list: []}
     }
   , componentDidMount: function () {
-        var me = this
-        dispatcher.pipe(storeUserMsg)
-        dispatcher.pipe(storeUserSgn)
-        
-        es.merge(
-            storeUserMsg
-          , storeUserSgn
-        )
-        .on('data', onData)
-
-        function onData (data) {
-            me.setState({list: [data].concat(me.state.list)})
-        }
+        store.on('data', function onData (data) {
+            this.setState({list: data})
+        }.bind(this))
     }
 })

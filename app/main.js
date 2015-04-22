@@ -2,6 +2,7 @@
 var shoe           = require('shoe')
 var es             = require('event-stream')
 var actUserMessage = require('./actions/user-message')
+var store          = require('./stores/user')
 var dispatcher     = require('./dispatcher')
 
 var prefix = '/shoes'
@@ -14,6 +15,7 @@ window.onload  = function () {
         .pipe(es.parse()).on('error', onError)
 //)
         .pipe(dispatcher)
+        .pipe(store)
 
     actUserMessage
         .pipe(es.stringify()).on('error', onError)
